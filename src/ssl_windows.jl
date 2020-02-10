@@ -175,7 +175,7 @@ function ca_chain_with_root_store!(config::SSLConfig; stores=["CA", "AuthRoot", 
         hcertstore = ccall((:CertOpenSystemStoreW, _crypt32), HCERTSTORE, (HCRYPTPROV_LEGACY, LPCWSTR),
             C_NULL, store)
 
-        hcertstore == C_NULL && error("CertOpenSystemStore failed: \"$(Libc.FormatMessage())\"")
+        hcertstore == C_NULL && (println(stderr, "Skipping certificate store \"$(store)\": CertOpenSystemStore failed: \"$(Libc.FormatMessage())\""); continue)
 
         # 3. Repeatedly call CertEnumCertificatesInStore until CRYPT_E_NOT_FOUND.
         pccert_context = ccall((:CertEnumCertificatesInStore, _crypt32), PCCERT_CONTEXT, (HCERTSTORE, PCCERT_CONTEXT),
